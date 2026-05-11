@@ -1,25 +1,41 @@
 
-# Project Blueprint: 3-Day Split Workout Recommender
+# Project Blueprint: 4분할 운동 추천 프로그램
 
-## Overview
+## 개요
 
-This project is a web application that provides a personalized 3-day split workout routine. Users can select a workout day (e.g., Chest & Triceps, Back & Biceps, Legs & Shoulders) and receive a tailored set of exercises for that day.
+이 프로젝트는 개인 맞춤형 4분할 운동 루틴을 제공하는 웹 애플리케이션입니다. 프로그램은 '상체, 하체, 상체, 하체' 순서로 구성되어 있습니다. 사용자는 운동할 날을 선택하여 맞춤 운동 목록을 받을 수 있으며, 운동 세트를 완료할 때마다 체크하여 진행 상황을 추적하고 운동 구성을 변경하는 기능도 포함합니다.
 
-## Initial Setup and Features
+## 주요 기능
 
-*   **HTML Structure (`index.html`):** The main page will have a clear title, a brief introduction to the 3-day split, and three interactive buttons representing each workout day.
-*   **CSS Styling (`style.css`):** The site will feature a modern, dark-themed, and responsive design. Key design elements include:
-    *   **Color Palette:** A dark background with vibrant accent colors for interactive elements.
-    *   **Typography:** Clear and readable fonts with a focus on hierarchy.
-    *   **Layout:** A centered, single-column layout for easy navigation on all devices.
-    *   **Interactive Elements:** Buttons with hover and active states to provide visual feedback.
-*   **JavaScript Logic (`main.js`):** The core functionality will be handled by JavaScript:
-    *   **Web Components:** Custom elements will be used to display exercise information, including the exercise name, sets, and reps.
-    *   **Event Listeners:** Each button will have an event listener that, when clicked, dynamically generates and displays the relevant workout routine.
+*   **HTML 구조 (`index.html`):**
+    *   프로그램의 메인 타이틀과 설명 (한국어).
+    *   4개의 운동일 버튼: "상체 1", "하체 1", "상체 2", "하체 2".
+    *   선택한 날짜의 운동 구성을 변경할 수 있는 "운동 변경" 버튼.
+    *   운동 루틴이 표시될 디스플레이 영역.
 
-## Current Implementation Plan
+*   **CSS 스타일 (`style.css`):**
+    *   **정리된 UI:** 사용자가 한눈에 정보를 파악할 수 있도록 레이아웃, 여백, 폰트 크기를 개선하여 깔끔하고 직관적인 디자인으로 변경.
+    *   **배경 정리:** 어지러운 배경 격자무늬 제거.
+    *   모던한 다크 테마 및 반응형 디자인 유지.
+    *   버튼, 체크박스 등 상호작용 요소의 스타일 개선.
+    *   완료된 항목에 대한 명확한 시각적 구분.
 
-1.  **Create `blueprint.md`:** Document the project overview, features, and implementation plan.
-2.  **Modify `index.html`:** Set up the basic HTML structure with a title, description, and buttons for each workout day.
-3.  **Modify `style.css`:** Apply a modern, dark-themed, and responsive design to the application.
-4.  **Modify `main.js`:** Implement the JavaScript logic to handle button clicks and display the corresponding workout recommendations using custom web components.
+*   **JavaScript 로직 (`main.js`):**
+    *   **한국어 지원:** 운동 카드 내의 "Set", "Reps" 및 모든 운동 종목명을 한국어로 변경.
+    *   **웹 컴포넌트 (`exercise-card`):** 각 운동을 표시하는 커스텀 엘리먼트.
+        *   운동 이름, 추천 세트 및 횟수 표시.
+        *   전체 운동 완료를 위한 마스터 체크박스.
+        *   개별 세트 완료를 위한 체크박스.
+        *   모든 세트 체크 시 마스터 체크박스가 자동으로 활성화되는 로직.
+    *   **데이터 구조:** 4분할 운동일에 대한 여러 운동 변형을 포함하는 `workouts` 객체.
+    *   **상태 관리:** 현재 표시된 운동과 각 날짜에 대해 선택된 변형을 추적하는 변수.
+    *   **이벤트 핸들러:**
+        *   운동일 버튼 클릭 리스너.
+        *   "운동 변경" 버튼 클릭 리스너.
+
+## 현재 구현 계획
+
+1.  **`blueprint.md` 업데이트:** 한국어 지원 및 UI/UX 개선 요구사항 반영.
+2.  **`style.css` 수정:** 배경 이미지를 제거하고, 더 깔끔한 레이아웃을 위해 전체적인 스타일(여백, 정렬 등)을 재조정.
+3.  **`index.html` 수정:** 페이지 언어를 `ko`로 설정하고 모든 텍스트를 한국어로 번역.
+4.  **`main.js` 수정:** 운동 카드 내부의 텍스트(Set, Reps)와 모든 운동 데이터의 이름을 한국어로 번역.

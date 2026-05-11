@@ -1,101 +1,167 @@
 
 class ExerciseCard extends HTMLElement {
-    constructor() {
-        super();
-        const shadow = this.attachShadow({ mode: 'open' });
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
 
-        const style = document.createElement('style');
-        style.textContent = `
-            :host {
-                display: block;
-                background-color: var(--card-bg, #2a2a2a);
-                border-radius: 8px;
-                padding: 20px;
-                box-shadow: 0 4px 8px var(--shadow-color, rgba(0,0,0,0.3));
-                transition: background-color 0.3s ease;
-            }
-            h3 {
-                margin: 0 0 10px;
-                color: var(--header-text, #fff);
-                font-size: 1.5em;
-            }
-            p {
-                margin: 0;
-                color: var(--text-color, #ccc);
-            }
-        `;
+  connectedCallback() {
+    this.render();
+    this.addEventListeners();
+  }
 
-        const wrapper = document.createElement('div');
-        const name = document.createElement('h3');
-        name.textContent = this.getAttribute('name');
-        const sets = document.createElement('p');
-        sets.textContent = `Sets: ${this.getAttribute('sets')}`;
-        const reps = document.createElement('p');
-        reps.textContent = `Reps: ${this.getAttribute('reps')}`;
+  static get observedAttributes() {
+    return ['name', 'sets', 'reps'];
+  }
 
-        shadow.appendChild(style);
-        shadow.appendChild(wrapper);
-        wrapper.appendChild(name);
-        wrapper.appendChild(sets);
-        wrapper.appendChild(reps);
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.render();
+    this.addEventListeners();
+  }
+
+  render() {
+    const name = this.getAttribute('name') || '운동';
+    const sets = parseInt(this.getAttribute('sets'), 10) || 0;
+    const reps = this.getAttribute('reps') || 'N/A';
+
+    let setsHtml = '';
+    for (let i = 1; i <= sets; i++) {
+      setsHtml += `
+        <label class="set-label">
+          ${i}세트: <input type="checkbox" class="set-checkbox">
+        </label>
+      `;
     }
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host { display: block; background-color: #2c2c2c; border-radius: 12px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.4); transition: all 0.3s ease; border-left: 5px solid transparent;}
+        h3 { margin: 0 0 15px; color: #fff; font-size: 1.7em; font-weight: 600; display: flex; align-items: center; }
+        p { margin: 0 0 20px; color: #c0c0c0; font-size: 1.1em; }
+        .master-checkbox { margin-right: 15px; width: 22px; height: 22px; cursor: pointer; }
+        .exercise-name.strikethrough { text-decoration: line-through; color: #777; }
+        .sets-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .set-label { color: #ddd; display: flex; align-items: center; font-size: 1.1em; }
+        .set-checkbox { margin-left: auto; width: 20px; height: 20px; cursor: pointer; }
+        :host(.completed) { border-left-color: #28a745; background-color: #333; }
+      </style>
+      <div>
+        <h3>
+          <input type="checkbox" class="master-checkbox">
+          <span class="exercise-name">${name}</span>
+        </h3>
+        <p>반복: ${reps}</p>
+        <div class="sets-container">
+          ${setsHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  addEventListeners() {
+    const masterCheckbox = this.shadowRoot.querySelector('.master-checkbox');
+    const exerciseName = this.shadowRoot.querySelector('.exercise-name');
+    const setCheckboxes = this.shadowRoot.querySelectorAll('.set-checkbox');
+
+    masterCheckbox.addEventListener('change', () => {
+      const isChecked = masterCheckbox.checked;
+      exerciseName.classList.toggle('strikethrough', isChecked);
+      setCheckboxes.forEach(cb => cb.checked = isChecked);
+      this.classList.toggle('completed', isChecked);
+    });
+
+    setCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const allChecked = Array.from(setCheckboxes).every(cb => cb.checked);
+        masterCheckbox.checked = allChecked;
+        exerciseName.classList.toggle('strikethrough', allChecked);
+        this.classList.toggle('completed', allChecked);
+      });
+    });
+  }
 }
 customElements.define('exercise-card', ExerciseCard);
 
 const workouts = {
-    'chest-triceps': [
-        { name: 'Bench Press', sets: 4, reps: '8-12' },
-        { name: 'Incline Dumbbell Press', sets: 3, reps: '10-15' },
-        { name: 'Cable Crossovers', sets: 3, reps: '12-15' },
-        { name: 'Tricep Pushdowns', sets: 4, reps: '10-15' },
-        { name: 'Overhead Tricep Extension', sets: 3, reps: '10-15' },
+    upper1: [
+        [
+            { name: '벤치 프레스', sets: 4, reps: '6-10회' },
+            { name: '풀업', sets: 4, reps: '가능한 많이' },
+            { name: '인클라인 덤벨 프레스', sets: 3, reps: '8-12회' },
+            { name: '바벨 로우', sets: 3, reps: '8-12회' },
+            { name: '래터럴 레이즈', sets: 4, reps: '12-15회' },
+        ],
+        [
+            { name: '오버헤드 프레스', sets: 4, reps: '6-10회' },
+            { name: '딥스', sets: 4, reps: '8-12회' },
+            { name: '케이블 로우', sets: 3, reps: '10-15회' },
+            { name: '덤벨 플라이', sets: 3, reps: '12-15회' },
+            { name: '페이스 풀', sets: 4, reps: '15-20회' },
+        ]
     ],
-    'back-biceps': [
-        { name: 'Pull-ups', sets: 4, reps: 'As many as possible' },
-        { name: 'Barbell Rows', sets: 4, reps: '8-12' },
-        { name: 'T-Bar Rows', sets: 3, reps: '10-15' },
-        { name: 'Barbell Curls', sets: 4, reps: '10-12' },
-        { name: 'Hammer Curls', sets: 3, reps: '12-15' },
+    lower1: [
+        [
+            { name: '스쿼트', sets: 4, reps: '6-10회' },
+            { name: '루마니안 데드리프트', sets: 3, reps: '8-12회' },
+            { name: '레그 프레스', sets: 3, reps: '10-15회' },
+            { name: '카프 레이즈', sets: 5, reps: '15-20회' },
+        ],
+        [
+            { name: '데드리프트', sets: 4, reps: '4-6회' },
+            { name: '레그 컬', sets: 3, reps: '10-15회' },
+            { name: '고블릿 스쿼트', sets: 3, reps: '12-15회' },
+            { name: '시티드 카프 레이즈', sets: 5, reps: '15-20회' },
+        ]
     ],
-    'legs-shoulders': [
-        { name: 'Squats', sets: 4, reps: '8-12' },
-        { name: 'Leg Press', sets: 4, reps: '10-15' },
-        { name: 'Romanian Deadlifts', sets: 3, reps: '10-15' },
-        { name: 'Overhead Press', sets: 4, reps: '8-12' },
-        { name: 'Lateral Raises', sets: 3, reps: '12-15' },
+    upper2: [
+        [
+            { name: '인클라인 벤치 프레스', sets: 4, reps: '6-10회' },
+            { name: 'T-바 로우', sets: 4, reps: '8-12회' },
+            { name: '덤벨 숄더 프레스', sets: 3, reps: '8-12회' },
+            { name: '트라이셉스 푸시다운', sets: 4, reps: '10-15회' },
+            { name: '바이셉스 컬', sets: 4, reps: '10-15회' },
+        ],
+        [
+            { name: '중량 딥스', sets: 4, reps: '6-10회' },
+            { name: '랫 풀다운', sets: 4, reps: '8-12회' },
+            { name: '아놀드 프레스', sets: 3, reps: '10-15회' },
+            { name: '스컬 크러셔', sets: 3, reps: '10-15회' },
+            { name: '해머 컬', sets: 3, reps: '12-15회' },
+        ]
     ],
+    lower2: [
+        [
+            { name: '프론트 스쿼트', sets: 4, reps: '6-10회' },
+            { name: '굿모닝', sets: 3, reps: '10-15회' },
+            { name: '런지', sets: 3, reps: '다리당 12-15회' },
+            { name: '레그 익스텐션', sets: 3, reps: '15-20회' },
+        ],
+        [
+            { name: '핵 스쿼트', sets: 4, reps: '8-12회' },
+            { name: '스티프 레그 데드리프트', sets: 3, reps: '8-12회' },
+            { name: '불가리안 스플릿 스쿼트', sets: 3, reps: '다리당 10-15회' },
+            { name: '라잉 레그 컬', sets: 3, reps: '12-15회' },
+        ]
+    ]
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     const workoutDisplay = document.getElementById('workout-display');
-    const themeToggle = document.getElementById('theme-toggle');
-    const currentTheme = localStorage.getItem('theme') || 'light';
+    const dayButtons = document.querySelectorAll('.day-btn');
+    const changeWorkoutBtn = document.getElementById('change-workout');
 
-    if (currentTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        themeToggle.textContent = 'Toggle Light Mode';
-    }
+    let currentDay = 'upper1';
+    let workoutVariations = { upper1: 0, lower1: 0, upper2: 0, lower2: 0 };
 
-    themeToggle.addEventListener('click', () => {
-        let theme = document.documentElement.getAttribute('data-theme');
-        if (theme === 'dark') {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'light');
-            themeToggle.textContent = 'Toggle Dark Mode';
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-            themeToggle.textContent = 'Toggle Light Mode';
-        }
-    });
-
-    document.getElementById('chest-triceps').addEventListener('click', () => showWorkout('chest-triceps'));
-    document.getElementById('back-biceps').addEventListener('click', () => showWorkout('back-biceps'));
-    document.getElementById('legs-shoulders').addEventListener('click', () => showWorkout('legs-shoulders'));
-
-    function showWorkout(workoutType) {
+    function showWorkout(day) {
+        currentDay = day;
         workoutDisplay.innerHTML = '';
-        const selectedWorkout = workouts[workoutType];
+        dayButtons.forEach(btn => btn.classList.remove('active'));
+        document.getElementById(day).classList.add('active');
+
+        const variationIndex = workoutVariations[day];
+        const selectedWorkout = workouts[day][variationIndex];
+        
         selectedWorkout.forEach(exercise => {
             const exerciseCard = document.createElement('exercise-card');
             exerciseCard.setAttribute('name', exercise.name);
@@ -104,4 +170,18 @@ document.addEventListener('DOMContentLoaded', () => {
             workoutDisplay.appendChild(exerciseCard);
         });
     }
+
+    changeWorkoutBtn.addEventListener('click', () => {
+        const variationsForDay = workouts[currentDay].length;
+        workoutVariations[currentDay] = (workoutVariations[currentDay] + 1) % variationsForDay;
+        showWorkout(currentDay);
+    });
+
+    dayButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            showWorkout(button.id);
+        });
+    });
+
+    showWorkout('upper1'); // 기본으로 첫번째 상체 운동을 보여줍니다.
 });
