@@ -1,14 +1,25 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Day Split Workout Recommender</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <header>
+        <h1>3-Day Split Workout Recommender</h1>
+        <p>Your guide to an effective 3-day split workout program. Choose a muscle group to see your workout for the day.</p>
+    </header>
+    <main>
+        <div class="button-group">
+            <button id="chest-triceps">Chest & Triceps</button>
+            <button id="back-biceps">Back & Biceps</button>
+            <button id="legs-shoulders">Legs & Shoulders</button>
+        </div>
+        <div id="workout-display"></div>
+    </main>
+    <script src="main.js"></script>
 </body>
 </html>
