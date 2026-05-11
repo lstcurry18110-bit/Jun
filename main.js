@@ -8,19 +8,20 @@ class ExerciseCard extends HTMLElement {
         style.textContent = `
             :host {
                 display: block;
-                background-color: #2a2a2a;
+                background-color: var(--card-bg, #2a2a2a);
                 border-radius: 8px;
                 padding: 20px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                box-shadow: 0 4px 8px var(--shadow-color, rgba(0,0,0,0.3));
+                transition: background-color 0.3s ease;
             }
             h3 {
                 margin: 0 0 10px;
-                color: #fff;
+                color: var(--header-text, #fff);
                 font-size: 1.5em;
             }
             p {
                 margin: 0;
-                color: #ccc;
+                color: var(--text-color, #ccc);
             }
         `;
 
@@ -67,6 +68,26 @@ const workouts = {
 
 document.addEventListener('DOMContentLoaded', () => {
     const workoutDisplay = document.getElementById('workout-display');
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = 'Toggle Light Mode';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            themeToggle.textContent = 'Toggle Dark Mode';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.textContent = 'Toggle Light Mode';
+        }
+    });
 
     document.getElementById('chest-triceps').addEventListener('click', () => showWorkout('chest-triceps'));
     document.getElementById('back-biceps').addEventListener('click', () => showWorkout('back-biceps'));
